@@ -17,7 +17,7 @@ const svg = d3
   .select("#scatter")
   .append("svg")
   .attr("width", svgWidth)
-  .attr("height", svgHeight +20);
+  .attr("height", svgHeight + 40);
 
 // Append an SVG group
 const chartGroup = svg.append("g")
@@ -92,7 +92,7 @@ function renderYCircles(circlesGroup, newYScale, chosenYAxis) {
 
     circlesGroup.transition()
       .duration(1000)
-      .attr("cy", d => newXScale(d[chosenYAxis]));
+      .attr("cy", d => newYScale(d[chosenYAxis]));
   
     return circlesGroup;
   }
@@ -111,7 +111,7 @@ function renderYText (circlesGroup, newYScale, chosenYAxis) {
 
     circlesGroup.transition()
         .duration(1000)
-        .attr("dy", d => newXScale(d[chosenYAxis]));
+        .attr("dy", d => newYScale(d[chosenYAxis]) + 5);
 
     return circlesGroup;
 }
@@ -151,14 +151,14 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
           };
       });
   
-    circlesGroup.call(toolTip);
+    // circlesGroup.call(toolTip);
   
     circlesGroup.on("mouseover", function(data) {
-        toolTip.show(data, this);
+        toolTip.show(data);
       })
       // onmouseout event
       .on("mouseout", function(data) {
-        toolTip.hide(data, this);
+        toolTip.hide(data);
       });
   
     return circlesGroup;
@@ -189,7 +189,6 @@ d3.csv("assets/data/data.csv").then(censusData => {
   
     // append x axis
     let xAxis = chartGroup.append("g")
-    //   .classed("x-axis", true)
       .attr("transform", `translate(0, ${height})`)
       .call(bottomAxis);
   
@@ -201,7 +200,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
     let circlesGroup = chartGroup.selectAll("circle")
       .data(censusData)
       .enter()
-      .append("circle")
+      .append("g")
 
     let circlesXY = circlesGroup.append("cicle")
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
@@ -340,20 +339,65 @@ d3.csv("assets/data/data.csv").then(censusData => {
 
     // y axis labels event listener
     ylabelsGroup.selectAll("text")
-      .on("click", fucntion() {
+      .on("click", function() {
       const value = d3.select(this).attr("value");
       if (value !== chosenYAxis){
 
         // replaces chosenYAxis with value
         chosenYAxis = value;
 
+        console.log(chosenYAxis);
+
         // updates y scale for new data
         yLinearScale = yScale(censusData, chosenYAxis);
 
         // updates y axis with transition
-        yAxis = renderYAxes
+        yAxis = renderYAxes(yLinearScale, yAxis);
 
-      }  
+        // updates circles with new y values
+        circlesXY = renderYCircles(circlesXY, yLinearScale, chosenYAxis);
+
+        // updates circles text with new y values
+        circlesText = renderYText(circlesText, yLinearScale, chosenYAxis);
+
+        // update tooltip info
+        circlesGroup = updateToolTip(circlesGroup, chosenXAxis, chosenYAxis);
+
+        // changes classes to change bold text
+        if (chosenYAxis === "healthcare") {
+            healthcareLabel
+                .classed("active", true)
+                .classed("inactive", false);
+            smokesLabel
+                .classed("active", false)
+                .classed("inactive", true);
+            obesityLabel
+                .classed("active", false)
+                .classed("inactive", true);
+        }
+        else if (chosenYAxis === "obesity"){
+            healthcareLabel
+                .classed("active", false)
+                .classed("inactive", true);
+            smokesLabel
+                .classed("active", false)
+                .classed("inactive", true);
+            obesityLabel
+                .classed("active", true)
+                .classed("inactive", false);
+        } else {
+            healthcareLabel
+                .classed("active", false)
+                .classed("inactive", true);
+            smokesLabel
+                .classed("active", true)
+                .classed("inactive", false);
+            obesityLabel
+                .classed("active", false)
+                .classed("inactive", true);
+        }
+
+      };  
 
 
       });
