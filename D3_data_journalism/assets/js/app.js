@@ -125,7 +125,7 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
       xlabel = "In Poverty (%)";
     }
     else if (chosenXAxis === "age"){
-      label = "Age (Median)";
+      xlabel = "Age (Median)";
     } else {
         xlabel = "Household Income (Median)";
     }
@@ -140,18 +140,13 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
     }
   
     const toolTip = d3.tip()
-      .attr("class", "ds-tip")
+      .attr("class", "d3-tip")
       .offset([80, -60])
       .html(function(d) {
-          if (chosenXAxis === "income"){
-              let incomelevel = formatter.format(d[chosenXAxis]);
-              return (`${d.state}<br>${label}: ${incomelevel.substring(0, incomelevel.length-3)}<br>${ylabel}: ${d[chosenYAxis]}`)
-          } else {
-              return (`${d.state}<br>${label}: ${d[chosenYAxis]}<br>${ylabel}: ${d[chosenYAxis]}`)
-          };
+        return (`${d.state}<br>${xLabel} ${styleX(d[chosenXAxis], chosenXAxis)}<br>${yLabel} ${d[chosenYAxis]}%`);
       });
   
-    // circlesGroup.call(toolTip);
+    circlesGroup.call(toolTip);
   
     circlesGroup.on("mouseover", function(data) {
         toolTip.show(data);
@@ -189,6 +184,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
   
     // append x axis
     let xAxis = chartGroup.append("g")
+      .classed("x-axis", true)
       .attr("transform", `translate(0, ${height})`)
       .call(bottomAxis);
   
@@ -200,19 +196,38 @@ d3.csv("assets/data/data.csv").then(censusData => {
     let circlesGroup = chartGroup.selectAll("circle")
       .data(censusData)
       .enter()
-      .append("g")
-
-    let circlesXY = circlesGroup.append("cicle")
+      .append("circle")
+      .classed("stateCircle", true)
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
       .attr("cy", d => yLinearScale(d[chosenYAxis]))
-      .attr("r", 15)
-      .classed("stateCircle", true);
+      .attr("r", 12)
+      .attr("opacity", ".5");
 
-    let circlesText = circlesGroup.append("text")
-        .text(d => d.abbr)
-        .attr("dx", d => xLinearScale(d[chosenXAxis]))
-        .attr("dy", d => yLinearScale(d[chosenYAxis]) + 5)
+
+    // let circlesXY = circlesGroup.append("cicle")
+    //   .attr("cx", d => xLinearScale(d[chosenXAxis]))
+    //   .attr("cy", d => yLinearScale(d[chosenYAxis]))
+    //   .attr("r", 15)
+    // //   .classed("stateCircle", true)
+    //   .attr("fill", "blue")
+    //   .attr("opacity", 0.5)
+    //   .attr("stroke", "black");
+
+    let circlesText = chartGroup.selectAll(".stateText")
+        .data(censusData)
+        .enter()
+        .append("text")
         .classed("stateText", true)
+        .attr("dx", d => xLinearScale(d[chosenXAxis]))
+        .attr("dy", d => yLinearScale(d[chosenYAxis]))
+        .attr("font-size", "10px")
+        .text(function(d) {return d.abbr});
+
+    // let circlesText = circlesGroup.append("text")
+    //     .text(d => d.abbr)
+    //     .attr("dx", d => xLinearScale(d[chosenXAxis]))
+    //     .attr("dy", d => yLinearScale(d[chosenYAxis]) + 5)
+    //     .classed("stateText", true)
   
     // Create group for three x-axis labels
     const xlabelsGroup = chartGroup.append("g")
@@ -247,7 +262,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .attr("y", -40)
       .attr("x", 0 - (height / 2))
       .attr("value", "healthcare") // value to grab for event listener
-      .attr("dy", "1em")
+    //   .attr("dy", "1em")
       .classed("active", true)
       .text("Lacks Healthcare (%)");
 
@@ -256,7 +271,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .attr("y", -60)
       .attr("x", 0 - (height / 2))
       .attr("value", "smokes") // value to grab for event listener
-      .attr("dy", "1em")
+    //   .attr("dy", "1em")
       .classed("inactive", true)
       .text("Smokes (%)");
   
@@ -265,7 +280,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .attr("y", -80)
       .attr("x", 0 - (height / 2))
       .attr("value", "obesity") // value to grab for event listener
-      .attr("dy", "1em")
+    //   .attr("dy", "1em")
       .classed("inactive", true)
       .text("Obese (%)");
 
@@ -292,7 +307,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
           xAxis = renderXAxes(xLinearScale, xAxis);
   
           // updates circles with new x values
-          circlesXY = renderXCircles(circlesXY, xLinearScale, chosenXAxis);
+          circlesGroup = renderXCircles(circlesGroup, xLinearScale, chosenXAxis);
 
           // update circle text with new x values
           circlesText = renderXText(circlesText, xLinearScale, chosenXAxis);
@@ -355,7 +370,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
         yAxis = renderYAxes(yLinearScale, yAxis);
 
         // updates circles with new y values
-        circlesXY = renderYCircles(circlesXY, yLinearScale, chosenYAxis);
+        circlesGroup = renderYCircles(circlesGroup, yLinearScale, chosenYAxis);
 
         // updates circles text with new y values
         circlesText = renderYText(circlesText, yLinearScale, chosenYAxis);
