@@ -24,7 +24,7 @@ const chartGroup = svg.append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Initial Params
-let chosenXAxis = "in_poverty";
+let chosenXAxis = "poverty";
 
 // function used for updating x-scale const upon click on axis label
 function xScale(censusData, chosenXAxis) {
@@ -66,7 +66,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
 
     let label;
   
-    if (chosenXAxis === "in_poverty") {
+    if (chosenXAxis === "poverty") {
       label = "In Poverty (%)";
     }
     else {
@@ -74,7 +74,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
     }
   
     const toolTip = d3.tip()
-      .attr("class", "d3-tip")
+      .attr("class", "tooltip")
       .offset([80, -60])
       .html(d => `${d.state}<br>${label} ${d[chosenXAxis]}`);
   
@@ -100,7 +100,9 @@ d3.csv("assets/data/data.csv").then(censusData => {
       data.age = +data.age;
       data.healthcare = +data.healthcare;
     });
+
     // console.log(censusData);
+    
     // xLinearScale function above csv import
     let xLinearScale = xScale(censusData, chosenXAxis);
   
@@ -142,14 +144,14 @@ d3.csv("assets/data/data.csv").then(censusData => {
     const povertyLabel = labelsGroup.append("text")
       .attr("x", 0)
       .attr("y", 20)
-      .attr("value", "in_poverty") // value to grab for event listener
+      .attr("value", "poverty") // value to grab for event listener
       .classed("active", true)
       .text("In Poverty (%)");
   
     const ageLabel = labelsGroup.append("text")
       .attr("x", 0)
       .attr("y", 40)
-      .attr("value", "age_median") // value to grab for event listener
+      .attr("value", "age") // value to grab for event listener
       .classed("inactive", true)
       .text("Age (Median)");
   
@@ -175,7 +177,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
           // replaces chosenXAxis with value
           chosenXAxis = value;
   
-          // console.log(chosenXAxis)
+          console.log(chosenXAxis)
   
           // functions here found above csv import
           // updates x scale for new data
@@ -191,7 +193,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
           circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
   
           // changes classes to change bold text
-          if (chosenXAxis === "in_poverty") {
+          if (chosenXAxis === "poverty") {
             povertyLabel
               .classed("active", true)
               .classed("inactive", false);
