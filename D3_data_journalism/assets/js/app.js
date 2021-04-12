@@ -25,6 +25,7 @@ const chartGroup = svg.append("g")
 
 // Initial Params
 let chosenXAxis = "poverty";
+let chosenYAxis = "healthcare";
 
 // function used for updating x-scale const upon click on axis label
 function xScale(censusData, chosenXAxis) {
@@ -99,6 +100,9 @@ d3.csv("assets/data/data.csv").then(censusData => {
       data.poverty = +data.poverty;
       data.age = +data.age;
       data.healthcare = +data.healthcare;
+      data.smokes = +data.smokes;
+      data.obesity = +data.obesity;
+      data.income = +data.income;
     });
 
     // console.log(censusData);
@@ -131,38 +135,63 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .enter()
       .append("circle")
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
-      .attr("cy", d => yLinearScale(d.healthcare))
+      .attr("cy", d => yLinearScale(d[chosenYAxis]))
       .attr("r", 10)
       .attr("fill", "blue")
       .attr("opacity", 0.5)
       .attr("stroke", "black");
+
+    let circlesText = circlesGroup.append("text")
+        .text(d => d.abbr)
+        .attr("dx", d => xLinearScale(d[chosenXAxis]))
+        .attr("dy", d => yLinearScale(d[chosenYAxis]) + 5)
+        .classed("stateText", true)
   
-    // Create group for two x-axis labels
-    const labelsGroup = chartGroup.append("g")
+    // Create group for three x-axis labels
+    const xlabelsGroup = chartGroup.append("g")
       .attr("transform", `translate(${width / 2}, ${height + 20})`);
   
-    const povertyLabel = labelsGroup.append("text")
+    const povertyLabel = xlabelsGroup.append("text")
       .attr("x", 0)
       .attr("y", 20)
       .attr("value", "poverty") // value to grab for event listener
       .classed("active", true)
       .text("In Poverty (%)");
   
-    const ageLabel = labelsGroup.append("text")
+    const ageLabel = xlabelsGroup.append("text")
       .attr("x", 0)
       .attr("y", 40)
       .attr("value", "age") // value to grab for event listener
       .classed("inactive", true)
       .text("Age (Median)");
+
+    const incomeLabel = xlabelsGroup.append("text")
+        .attr("x", 0)
+        .attr("y", 60)
+        .attr("value", "income") // value to grab for event listener
+        .classed("inactive", true)
+        .text("Household Income (Median)");
   
-    // append y axis
-    chartGroup.append("text")
+    // Create group for three y-axis labels  
+    const ylabelsGroup = chartGroup.append("g");
+
+    const healthcareLabel = ylabelsGroup.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -40)
+      .attr("x", 0 - (height / 2))
+      .attr("value", "healthcare") // value to grab for event listener
+      .attr("dy", "1em")
+      .classed("active", true)
+      .text("Lacks Healthcare (%)");
+
+      const smokesLabel = ylabelsGroup.append("text")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left)
       .attr("x", 0 - (height / 2))
+      .attr("value", "smokes") // value to grab for event listener
       .attr("dy", "1em")
-      .classed("axis-text", true)
-      .text("Lacks Healthcare (%)");
+      .classed("inactive", true)
+      .text("Smokes (%)");
   
     // updateToolTip function above csv import
     circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
