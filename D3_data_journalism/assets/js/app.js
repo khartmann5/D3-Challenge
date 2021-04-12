@@ -28,28 +28,52 @@ let chosenXAxis = "poverty";
 let chosenYAxis = "healthcare";
 
 // function used for updating x-scale const upon click on axis label
-// function xScale(censusData, chosenXAxis) {
-//     // create scales
-//     const xLinearScale = d3.scaleLinear()
-//       .domain([d3.min(censusData, d => d[chosenXAxis]),
-//         d3.max(censusData, d => d[chosenXAxis])
-//       ])
-//       .range([0, width]);
+function xScale(censusData, chosenXAxis) {
+    // create scales
+    const xLinearScale = d3.scaleLinear()
+      .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.9,
+        d3.max(censusData, d => d[chosenXAxis]) * 1.1
+      ])
+      .range([0, width]);
   
-//     return xLinearScale;
+    return xLinearScale;
   
-//   }
+  }
 
-//   // function used for updating xAxis const upon click on axis label
-// function renderAxes(newXScale, xAxis) {
-//     const bottomAxis = d3.axisBottom(newXScale);
+// function used for updating y-scale const upon click on axis label
+function yScale(censusData, chosenYAxis) {
+    // create scales
+    const yLinearScale = d3.scaleLinear()
+      .domain([d3.min(censusData, d => d[chosenYAxis]) - 1,
+        d3.max(censusData, d => d[chosenXAxis]) + 1
+      ])
+      .range([height, 0]);
   
-//     xAxis.transition()
-//       .duration(1000)
-//       .call(bottomAxis);
+    return yLinearScale;
   
-//     return xAxis;
-//   }
+  }
+
+// function used for updating xAxis const upon click on axis label
+function renderXAxes(newXScale, xAxis) {
+    const bottomAxis = d3.axisBottom(newXScale);
+  
+    xAxis.transition()
+      .duration(1000)
+      .call(bottomAxis);
+  
+    return xAxis;
+  }
+
+// function used for updating yAxis const upon click on axis label
+function renderXAxes(newYScale, yAxis) {
+    const leftAxis = d3.axisLeft(newYScale);
+  
+    yAxis.transition()
+      .duration(1000)
+      .call(leftAxis);
+  
+    return yAxis;
+  }
 
 // // function used for updating circles group with a transition to
 // // new circles
@@ -223,7 +247,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
           xLinearScale = xScale(censusData, chosenXAxis);
   
           // updates x axis with transition
-          xAxis = renderAxes(xLinearScale, xAxis);
+          xAxis = renderXAxes(xLinearScale, xAxis);
   
           // updates circles with new x values
           circlesXY = renderXCircles(circlesXY, xLinearScale, chosenXAxis);
@@ -271,5 +295,25 @@ d3.csv("assets/data/data.csv").then(censusData => {
         }
       });
 
+    // y axis labels event listener
+    ylabelsGroup.selectAll("text")
+      .on("click", fucntion() {
+      const value = d3.select(this).attr("value");
+      if (value !== chosenYAxis){
+
+        // replaces chosenYAxis with value
+        chosenYAxis = value;
+
+        // updates y scale for new data
+        yLinearScale = yScale(censusData, chosenYAxis);
+
+        // updates y axis with transition
+        yAxis = renderYAxes
+
+      }  
+
+
+      });
+      
     
   }).catch(error => console.log(error));
