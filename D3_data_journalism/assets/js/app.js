@@ -65,7 +65,7 @@ function renderXAxes(newXScale, xAxis) {
   }
 
 // function used for updating yAxis const upon click on axis label
-function renderXAxes(newYScale, yAxis) {
+function renderYAxes(newYScale, yAxis) {
     const leftAxis = d3.axisLeft(newYScale);
   
     yAxis.transition()
@@ -75,46 +75,94 @@ function renderXAxes(newYScale, yAxis) {
     return yAxis;
   }
 
-// // function used for updating circles group with a transition to
-// // new circles
-// function renderCircles(circlesGroup, newXScale, chosenXAxis) {
+// function used for updating circles group with a transition to
+// new circles
+function renderXCircles(circlesGroup, newXScale, chosenXAxis) {
 
-//     circlesGroup.transition()
-//       .duration(1000)
-//       .attr("cx", d => newXScale(d[chosenXAxis]));
+    circlesGroup.transition()
+      .duration(1000)
+      .attr("cx", d => newXScale(d[chosenXAxis]));
   
-//     return circlesGroup;
-//   }
+    return circlesGroup;
+  }
 
-//   // function used for updating circles group with new tooltip
-// function updateToolTip(chosenXAxis, circlesGroup) {
+// function used for updating circles group with a transition to
+// new circles
+function renderYCircles(circlesGroup, newYScale, chosenYAxis) {
 
-//     let label;
+    circlesGroup.transition()
+      .duration(1000)
+      .attr("cy", d => newXScale(d[chosenYAxis]));
   
-//     if (chosenXAxis === "poverty") {
-//       label = "In Poverty (%)";
-//     }
-//     else {
-//       label = "Age (Median)";
-//     }
+    return circlesGroup;
+  }
+
+// functions used for updating circles text 
+function renderXText (circlesGroup, newXScale, chosenXAxis) {
+
+    circlesGroup.transition()
+        .duration(1000)
+        .attr("dx", d => newXScale(d[chosenXAxis]));
+
+    return circlesGroup;
+}
+
+function renderYText (circlesGroup, newYScale, chosenYAxis) {
+
+    circlesGroup.transition()
+        .duration(1000)
+        .attr("dy", d => newXScale(d[chosenYAxis]));
+
+    return circlesGroup;
+}
+
+
+  // function used for updating circles group with new tooltip
+function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
+
+    let xlabel;
+    if (chosenXAxis === "poverty") {
+      xlabel = "In Poverty (%)";
+    }
+    else if (chosenXAxis === "age"){
+      label = "Age (Median)";
+    } else {
+        xlabel = "Household Income (Median)";
+    }
+
+    let ylabel;
+    if (chosenYAxis === "healthcare"){
+        ylabel = "Lacks Healthcare (%)";
+    } else if (chosenYAxis === "smokes"){
+        ylabel = "Smokes (%)";
+    } else {
+        ylabel = "Obesity (%)";
+    }
   
-//     const toolTip = d3.tip()
-//       .attr("class", "tooltip")
-//       .offset([80, -60])
-//       .html(d => `${d.state}<br>${label} ${d[chosenXAxis]}`);
+    const toolTip = d3.tip()
+      .attr("class", "ds-tip")
+      .offset([80, -60])
+      .html(function(d) {
+          if (chosenXAxis === "income"){
+              let incomelevel = formatter.format(d[chosenXAxis]);
+              return (`${d.state}<br>${label}: ${incomelevel.substring(0, incomelevel.length-3)}<br>${ylabel}: ${d[chosenYAxis]}`)
+          } else {
+              return (`${d.state}<br>${label}: ${d[chosenYAxis]}<br>${ylabel}: ${d[chosenYAxis]}`)
+          };
+      });
   
-//     circlesGroup.call(toolTip);
+    circlesGroup.call(toolTip);
   
-//     circlesGroup.on("mouseover", function(data) {
-//         toolTip.show(data);
-//       })
-//       // onmouseout event
-//       .on("mouseout", function(data) {
-//         toolTip.hide(data);
-//       });
+    circlesGroup.on("mouseover", function(data) {
+        toolTip.show(data, this);
+      })
+      // onmouseout event
+      .on("mouseout", function(data) {
+        toolTip.hide(data, this);
+      });
   
-//     return circlesGroup;
-//   }
+    return circlesGroup;
+  }
 
   // Retrieve data from the CSV file and execute everything below
 d3.csv("assets/data/data.csv").then(censusData => {
@@ -134,11 +182,6 @@ d3.csv("assets/data/data.csv").then(censusData => {
     // initialize scale functions
     let xLinearScale = xScale(censusData, chosenXAxis);
     let yLinearScale = yScale(censusData, chosenYAxis);
-  
-    // // Create y scale function
-    // const yLinearScale = d3.scaleLinear()
-    //   .domain([0, d3.max(censusData, d => d.healthcare)])
-    //   .range([height, 0]);
   
     // Create initial axis functions
     const bottomAxis = d3.axisBottom(xLinearScale);
