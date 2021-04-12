@@ -30,8 +30,8 @@ let chosenXAxis = "in_poverty";
 function xScale(censusData, chosenXAxis) {
     // create scales
     const xLinearScale = d3.scaleLinear()
-      .domain([d3.min(censusData, d => d[chosenXAxis]) * 0.8,
-        d3.max(censusData, d => d[chosenXAxis]) * 1.2
+      .domain([d3.min(censusData, d => d[chosenXAxis]),
+        d3.max(censusData, d => d[chosenXAxis])
       ])
       .range([0, width]);
   
@@ -74,7 +74,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
     }
   
     const toolTip = d3.tip()
-      .attr("class", "tooltip")
+      .attr("class", "d3-tip")
       .offset([80, -60])
       .html(d => `${d.state}<br>${label} ${d[chosenXAxis]}`);
   
@@ -92,7 +92,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
   }
 
   // Retrieve data from the CSV file and execute everything below
-d3.csv("data.csv").then(censusData => {
+d3.csv("assets/data/data.csv").then(censusData => {
   
     // parse data
     censusData.forEach(data => {
@@ -100,7 +100,7 @@ d3.csv("data.csv").then(censusData => {
       data.age = +data.age;
       data.healthcare = +data.healthcare;
     });
-    console.log(censusData);
+    // console.log(censusData);
     // xLinearScale function above csv import
     let xLinearScale = xScale(censusData, chosenXAxis);
   
@@ -130,7 +130,7 @@ d3.csv("data.csv").then(censusData => {
       .append("circle")
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
       .attr("cy", d => yLinearScale(d.healthcare))
-      .attr("r", 20)
+      .attr("r", 10)
       .attr("fill", "blue")
       .attr("opacity", 0.5)
       .attr("stroke", "black");
