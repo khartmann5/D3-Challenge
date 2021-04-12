@@ -160,7 +160,7 @@ d3.csv("data.csv").then(censusData => {
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
       .classed("axis-text", true)
-      .text("Number of Billboard 500 Hits");
+      .text("Lacks Healthcare (%)");
   
     // updateToolTip function above csv import
     circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
@@ -191,19 +191,19 @@ d3.csv("data.csv").then(censusData => {
           circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
   
           // changes classes to change bold text
-          if (chosenXAxis === "num_albums") {
-            albumsLabel
+          if (chosenXAxis === "in_poverty") {
+            povertyLabel
               .classed("active", true)
               .classed("inactive", false);
-            hairLengthLabel
+            ageLabel
               .classed("active", false)
               .classed("inactive", true);
           }
           else {
-            albumsLabel
+            povertyLabel
               .classed("active", false)
               .classed("inactive", true);
-            hairLengthLabel
+            ageLabel
               .classed("active", true)
               .classed("inactive", false);
           }
