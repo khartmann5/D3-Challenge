@@ -143,20 +143,12 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
       .attr("class", "d3-tip")
       .offset([8, 0])
       .html(function(d) {
-        return (`${d.state}<br>${xlabel} ${d[chosenXAxis]}<br>${ylabel} ${d[chosenYAxis]}%`);
+        return (`${d.state}<br>${xlabel} ${d[chosenXAxis]}<br>${ylabel} ${d[chosenYAxis]}`);
       });
   
     circlesGroup.call(toolTip);
 
     circlesGroup.on("mouseover", toolTip.show).on("mouseout", toolTip.hide);
-  
-    // circlesGroup.on("mouseover", function(data) {
-    //     toolTip.show(data);
-    //   })
-    //   // onmouseout event
-    //   .on("mouseout", function(data) {
-    //     toolTip.hide(data);
-    //   });
   
     return circlesGroup;
   }
@@ -204,15 +196,6 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .attr("cy", d => yLinearScale(d[chosenYAxis]))
       .attr("r", 12);
 
-    // let circlesXY = circlesGroup.append("cicle")
-    //   .attr("cx", d => xLinearScale(d[chosenXAxis]))
-    //   .attr("cy", d => yLinearScale(d[chosenYAxis]))
-    //   .attr("r", 15)
-    // //   .classed("stateCircle", true)
-    //   .attr("fill", "blue")
-    //   .attr("opacity", 0.5)
-    //   .attr("stroke", "black");
-
     let circlesText = chartGroup.selectAll(".stateText")
         .data(censusData)
         .enter()
@@ -222,12 +205,6 @@ d3.csv("assets/data/data.csv").then(censusData => {
         .attr("dy", d => yLinearScale(d[chosenYAxis]))
         .attr("font-size", "10px")
         .text(function(d) {return d.abbr});
-
-    // let circlesText = circlesGroup.append("text")
-    //     .text(d => d.abbr)
-    //     .attr("dx", d => xLinearScale(d[chosenXAxis]))
-    //     .attr("dy", d => yLinearScale(d[chosenYAxis]) + 5)
-    //     .classed("stateText", true)
   
     // Create group for three x-axis labels
     const xlabelsGroup = chartGroup.append("g")
