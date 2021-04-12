@@ -120,41 +120,43 @@ function renderYText (circlesGroup, newYScale, chosenYAxis) {
   // function used for updating circles group with new tooltip
 function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
 
-    let xlabel;
+    // let xlabel;
     if (chosenXAxis === "poverty") {
-      xlabel = "In Poverty (%)";
+      var xlabel = "In Poverty (%)";
     }
     else if (chosenXAxis === "age"){
-      xlabel = "Age (Median)";
+      var xlabel = "Age (Median)";
     } else {
-        xlabel = "Household Income (Median)";
+       var xlabel = "Household Income (Median)";
     }
 
-    let ylabel;
+    // let ylabel;
     if (chosenYAxis === "healthcare"){
-        ylabel = "Lacks Healthcare (%)";
+        var ylabel = "Lacks Healthcare (%)";
     } else if (chosenYAxis === "smokes"){
-        ylabel = "Smokes (%)";
+        var ylabel = "Smokes (%)";
     } else {
-        ylabel = "Obesity (%)";
+        var ylabel = "Obesity (%)";
     }
   
     const toolTip = d3.tip()
       .attr("class", "d3-tip")
-      .offset([80, -60])
+      .offset([8, 0])
       .html(function(d) {
-        return (`${d.state}<br>${xLabel} ${styleX(d[chosenXAxis], chosenXAxis)}<br>${yLabel} ${d[chosenYAxis]}%`);
+        return (`${d.state}<br>${xlabel} ${d[chosenXAxis]}<br>${ylabel} ${d[chosenYAxis]}%`);
       });
   
     circlesGroup.call(toolTip);
+
+    circlesGroup.on("mouseover", toolTip.show).on("mouseout", toolTip.hide);
   
-    circlesGroup.on("mouseover", function(data) {
-        toolTip.show(data);
-      })
-      // onmouseout event
-      .on("mouseout", function(data) {
-        toolTip.hide(data);
-      });
+    // circlesGroup.on("mouseover", function(data) {
+    //     toolTip.show(data);
+    //   })
+    //   // onmouseout event
+    //   .on("mouseout", function(data) {
+    //     toolTip.hide(data);
+    //   });
   
     return circlesGroup;
   }
@@ -200,9 +202,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .classed("stateCircle", true)
       .attr("cx", d => xLinearScale(d[chosenXAxis]))
       .attr("cy", d => yLinearScale(d[chosenYAxis]))
-      .attr("r", 12)
-      .attr("opacity", ".5");
-
+      .attr("r", 12);
 
     // let circlesXY = circlesGroup.append("cicle")
     //   .attr("cx", d => xLinearScale(d[chosenXAxis]))
