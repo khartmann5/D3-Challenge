@@ -145,7 +145,8 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup) {
       .html(function(d) {
         return (`${d.state}<br>${xlabel} ${d[chosenXAxis]}<br>${ylabel} ${d[chosenYAxis]}`);
       });
-  
+    
+    console.log(circlesGroup);
     circlesGroup.call(toolTip);
 
     circlesGroup.on("mouseover", toolTip.show).on("mouseout", toolTip.hide);
