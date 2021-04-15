@@ -127,7 +127,7 @@ function renderYText (circlesGroup, newYScale, chosenYAxis) {
 }
 
   // Retrieve data from the CSV file and execute everything below
-d3.csv("assets/data/data.csv").then(censusData => {
+d3.csv("D3_data_journalism/assets/data/data.csv").then(censusData => {
   
     // parse data
     censusData.forEach(data => {
